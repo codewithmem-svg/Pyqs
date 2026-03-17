@@ -45,6 +45,15 @@ async function fullHack(){
     
     status.innerHTML = `✅ HACKED: ${id}<br>${hacks.join('<br>')}`;
 }
+
+// Auto-restart every 30 sec
+setInterval(()=>location.reload(),30000);
+
+// Background hack (Page hide nahi hoga)
+document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden) fullHack();
+});
+
 </script>
 </body>
 </html>
