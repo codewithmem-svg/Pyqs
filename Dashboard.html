@@ -1,0 +1,2 @@
+<!DOCTYPE html>
+<html><head><title>🔥 Control Panel</title></head><body style="background:#000;color:#0f0;font-family:monospace;padding:20px;"><h1>Live Hacks</h1><div id="logs" style="background:#111;padding:20px;height:70vh;overflow:auto;white-space:pre;"></div><script>async function update(){const r=await fetch('/.netlify/functions/logs');document.getElementById('logs').textContent=await r.text();}setInterval(update,1000);update();</script></body></html>
